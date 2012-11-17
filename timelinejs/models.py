@@ -8,12 +8,15 @@ class Asset(models.Model):
     credit = models.TextField(blank=True, default='')
     caption = models.TextField(blank=True, default='')
 
-    def to_json(self):
-        return json.dumps({
+    def to_json_dict(self):
+        return {
             'media': self.media,
             'credit': self.credit,
             'caption': self.caption,
-        })
+        }
+
+    def to_json(self):
+        return json.dumps(self.to_json_dict())
 
 
 class Timeline(models.Model):
@@ -30,8 +33,8 @@ class Timeline(models.Model):
             'headline': self.headline,
             'startDate': self.start_date.strftime('%Y,%m,%d'),
             'text': self.text,
-            'asset': self.asset.to_json(),
-            'date': [],
+            'asset': self.asset.to_json_dict(),
+            'date': [a.to_json_dict() for a in self.entries.all()],
         })
 
 
@@ -45,10 +48,13 @@ class TimelineEntry(models.Model):
     def __unicode__(self):
         return "%s: %s" % (self.timeline, self.headline)
 
-    def to_json(self):
-        return json.dumps({
+    def to_json_dict(self):
+        return {
             'startDate': self.start_date.strftime('%Y,%m,%d'),
             'headline': self.headline,
             'text': self.text,
-            'asset': self.asset.to_json(),
-        })
+            'asset': self.asset.to_json_dict(),
+        }
+
+    def to_json(self):
+        return json.dumps(self.to_json_dict())

@@ -33,17 +33,34 @@ def generate_random_caption():
     return '<p>Some HTML caption, %d!</p>' % random.randint(1000, 2000)
 
 
-def generate_random_asset():
-    return models.Asset(media=generate_random_media(),
+def generate_random_asset(save=True):
+    m = models.Asset(media=generate_random_media(),
             credit=generate_random_credit(),
             caption=generate_random_caption())
+    if save:
+        m.save()
+    return m
 
 
-def generate_random_timeline():
-    return models.Timeline(headline=generate_random_headline(),
+def generate_random_timeline(save=True):
+    m = models.Timeline(headline=generate_random_headline(),
             start_date=generate_random_start_date(),
             text=generate_random_text(),
             asset=generate_random_asset())
+    if save:
+        m.save()
+    return m
+
+
+def generate_random_timeline_entry(timeline, save=True):
+    m = models.TimelineEntry(timeline=timeline,
+            headline=generate_random_headline(),
+            start_date=generate_random_start_date(),
+            text=generate_random_text(),
+            asset=generate_random_asset(save=save))
+    if save:
+        m.save()
+    return m
 
 
 class AssetTestCase(TestCase):
@@ -72,6 +89,17 @@ class TimelineEntryTestCase(TestCase):
             'timeline': generate_random_timeline(),
         }
 
+    def test_to_json_dict(self):
+        kwargs = self.timeline_entry_kwargs
+        entry = models.TimelineEntry(**kwargs)
+        expected = {
+            'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
+            'headline': kwargs['headline'],
+            'text': kwargs['text'],
+            'asset': kwargs['asset'].to_json_dict(),
+        }
+        self.assertEqual(expected, entry.to_json_dict())
+
     def test_to_json(self):
         kwargs = self.timeline_entry_kwargs
         entry = models.TimelineEntry(**kwargs)
@@ -79,7 +107,7 @@ class TimelineEntryTestCase(TestCase):
             'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
             'headline': kwargs['headline'],
             'text': kwargs['text'],
-            'asset': kwargs['asset'].to_json()
+            'asset': kwargs['asset'].to_json_dict()
         })
         self.assertEqual(expected, entry.to_json())
 
@@ -101,7 +129,36 @@ class TimelineTestCase(TestCase):
             'headline': kwargs['headline'],
             'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
             'text': kwargs['text'],
-            'asset': kwargs['asset'].to_json(),
+            'asset': kwargs['asset'].to_json_dict(),
             'date': [],
+        })
+        self.assertEqual(expected, timeline.to_json())
+
+    def test_to_json_with_one_date(self):
+        kwargs = self.timeline_kwargs
+        timeline = models.Timeline.objects.create(**kwargs)
+        entry = generate_random_timeline_entry(timeline, save=True)
+
+        expected = json.dumps({
+            'headline': kwargs['headline'],
+            'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
+            'text': kwargs['text'],
+            'asset': kwargs['asset'].to_json_dict(),
+            'date': [entry.to_json_dict()],
+        })
+        self.assertEqual(expected, timeline.to_json())
+
+    def test_to_json_with_two_dates(self):
+        kwargs = self.timeline_kwargs
+        timeline = models.Timeline.objects.create(**kwargs)
+        entry_a = generate_random_timeline_entry(timeline, save=True)
+        entry_b = generate_random_timeline_entry(timeline, save=True)
+
+        expected = json.dumps({
+            'headline': kwargs['headline'],
+            'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
+            'text': kwargs['text'],
+            'asset': kwargs['asset'].to_json_dict(),
+            'date': [entry_a.to_json_dict(), entry_b.to_json_dict()],
         })
         self.assertEqual(expected, timeline.to_json())
