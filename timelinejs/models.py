@@ -4,13 +4,13 @@ from django.db import models
 
 
 class Asset(models.Model):
-    url = models.TextField()
+    media = models.TextField()
     credit = models.TextField(blank=True, default='')
     caption = models.TextField(blank=True, default='')
 
     def to_json(self):
         return json.dumps({
-            'url': self.url,
+            'media': self.media,
             'credit': self.credit,
             'caption': self.caption,
         })

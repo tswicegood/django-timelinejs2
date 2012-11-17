@@ -11,11 +11,12 @@ class AssetTestCase(TestCase):
         """
         Verify that to_json returns appropriate JSON object
         """
-        url = 'some-asset-%d.png' % random.randint(1000, 2000)
+        media = 'some-asset-%d.png' % random.randint(1000, 2000)
         credit = 'Some Random Credit %d' % random.randint(100, 200)
         caption = '<p>I\'m an HTML caption!</p>'
-        m = models.Asset(url=url, credit=credit, caption=caption)
+        m = models.Asset(media=media, credit=credit, caption=caption)
 
-        expected = json.dumps({'url': url, 'credit': credit,
+        expected = json.dumps({'media': media, 'credit': credit,
                 'caption': caption})
         self.assertEqual(expected, m.to_json())
+
