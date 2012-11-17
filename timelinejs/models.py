@@ -35,3 +35,11 @@ class TimelineEntry(models.Model):
 
     def __unicode__(self):
         return "%s: %s" % (self.timeline, self.headline)
+
+    def to_json(self):
+        return json.dumps({
+            'startDate': self.start_date.strftime('%Y,%m,%d'),
+            'headline': self.headline,
+            'text': self.text,
+            'asset': self.asset.to_json(),
+        })
