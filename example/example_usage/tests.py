@@ -82,3 +82,26 @@ class TimelineEntryTestCase(TestCase):
             'asset': kwargs['asset'].to_json()
         })
         self.assertEqual(expected, entry.to_json())
+
+
+class TimelineTestCase(TestCase):
+    @property
+    def timeline_kwargs(self):
+        return {
+            'headline': generate_random_headline(),
+            'start_date': generate_random_start_date(),
+            'text': generate_random_text(),
+            'asset': generate_random_asset(),
+        }
+
+    def test_to_json(self):
+        kwargs = self.timeline_kwargs
+        timeline = models.Timeline(**kwargs)
+        expected = json.dumps({
+            'headline': kwargs['headline'],
+            'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
+            'text': kwargs['text'],
+            'asset': kwargs['asset'].to_json(),
+            'date': [],
+        })
+        self.assertEqual(expected, timeline.to_json())

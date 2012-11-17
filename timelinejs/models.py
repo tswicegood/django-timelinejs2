@@ -25,6 +25,15 @@ class Timeline(models.Model):
     def __unicode__(self):
         return self.headline
 
+    def to_json(self):
+        return json.dumps({
+            'headline': self.headline,
+            'startDate': self.start_date.strftime('%Y,%m,%d'),
+            'text': self.text,
+            'asset': self.asset.to_json(),
+            'date': [],
+        })
+
 
 class TimelineEntry(models.Model):
     timeline = models.ForeignKey(Timeline, related_name='entries')
