@@ -111,6 +111,12 @@ class TimelineEntryTestCase(TestCase):
         })
         self.assertEqual(expected, entry.to_json())
 
+    def test_can_convert_to_json_with_string_dates(self):
+        kwargs = self.timeline_entry_kwargs
+        kwargs['start_date'] = kwargs['start_date'].strftime('%Y-%m-%d')
+        entry = models.TimelineEntry(**kwargs)
+        entry.to_json()
+
 
 class TimelineTestCase(TestCase):
     @property
@@ -133,6 +139,12 @@ class TimelineTestCase(TestCase):
             'date': [],
         })
         self.assertEqual(expected, timeline.to_json())
+
+    def test_can_convert_to_json_with_string_dates(self):
+        kwargs = self.timeline_kwargs
+        kwargs['start_date'] = kwargs['start_date'].strftime('%Y-%m-%d')
+        timeline = models.Timeline(**kwargs)
+        timeline.to_json()
 
     def test_to_json_with_one_date(self):
         kwargs = self.timeline_kwargs
