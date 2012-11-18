@@ -1,0 +1,27 @@
+{% extends "abstract_base.html" %}
+{% load staticfiles %}
+
+{% block head %}
+<style type="text/css">
+html, body { width: 100%; height: 100%; }
+</style>
+
+<script src="{% static "jquery/jquery.min.js" %}"></script>
+<script src="{% static "timelinejs_static/js/storyjs-embed.js" %}"></script>
+{% endblock %}
+
+{% block body %}{{ block.super }}
+  <div id="timeline-embed"></div>
+  <script>
+
+    $(function() {
+      createStoryJS({
+        type: 'timeline',
+        width: '100%',
+        height: '100%',
+        source: '{% url timelinejs_json pk=1 %}',
+        embed_id: 'timeline-embed'
+      })
+    });
+  </script>
+{% endblock %}
