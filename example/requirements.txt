@@ -5,3 +5,4 @@ django-appconf==0.5
 django-staticfiles==1.2.1
 django-staticfiles-jquery==1.8.1
 django-staticfiles-timelinejs-static==v2.18
+factory-boy==1.2.0

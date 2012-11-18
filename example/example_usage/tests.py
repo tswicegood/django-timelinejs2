@@ -3,64 +3,57 @@ import json
 import random
 
 from django.test import TestCase
+import factory
 
 from timelinejs import models
 
-
-def generate_random_headline():
-    return 'random-headline-%d' % random.randint(1000, 2000)
+seq = lambda s: factory.Sequence(lambda n: s.format(n))
 
 
-def generate_random_start_date():
+def generate_random_start_date(*args):
     now = datetime.datetime.now()
     r = random.randint(-10, 10)
     return (now - datetime.timedelta(days=r)).date()
 
 
-def generate_random_text():
-    return 'random text %d' % random.randint(1000, 2000)
+class AssetFactory(factory.Factory):
+    FACTORY_FOR = models.Asset
+
+    media = seq('media-{0}.png')
+    credit = seq('credit-{0}')
+    caption = seq('caption-{0}')
 
 
-def generate_random_media():
-    return 'some-asset-%d.png' % random.randint(1000, 2000)
+class TimelineFactory(factory.Factory):
+    FACTORY_FOR = models.Timeline
+
+    headline = seq('headline-{0}')
+    start_date = factory.LazyAttribute(generate_random_start_date)
+    text = seq('<p>Random Text{0}</p>')
+    asset = factory.SubFactory(AssetFactory)
 
 
-def generate_random_credit():
-    return 'Some Random Credit %d' % random.randint(1000, 2000)
+class TimelineEntryFactory(factory.Factory):
+    FACTORY_FOR = models.TimelineEntry
 
-
-def generate_random_caption():
-    return '<p>Some HTML caption, %d!</p>' % random.randint(1000, 2000)
+    timeline = factory.SubFactory(TimelineFactory)
+    start_date = factory.LazyAttribute(generate_random_start_date)
+    headline = seq('timeline-entry-headline-{0}')
+    text = seq('<p>Timeline Entry Text {0}</p>')
+    asset = factory.SubFactory(AssetFactory)
 
 
 def generate_random_asset(save=True):
-    m = models.Asset(media=generate_random_media(),
-            credit=generate_random_credit(),
-            caption=generate_random_caption())
-    if save:
-        m.save()
-    return m
+    return AssetFactory.create() if save else AssetFactory.build()
 
 
 def generate_random_timeline(save=True):
-    m = models.Timeline(headline=generate_random_headline(),
-            start_date=generate_random_start_date(),
-            text=generate_random_text(),
-            asset=generate_random_asset())
-    if save:
-        m.save()
-    return m
+    return TimelineFactory.create() if save else TimelineFactory.build()
 
 
 def generate_random_timeline_entry(timeline, save=True):
-    m = models.TimelineEntry(timeline=timeline,
-            headline=generate_random_headline(),
-            start_date=generate_random_start_date(),
-            text=generate_random_text(),
-            asset=generate_random_asset(save=save))
-    if save:
-        m.save()
-    return m
+    return TimelineEntryFactory.create() if save else \
+        TimelineFactory.build()
 
 
 class AssetTestCase(TestCase):
@@ -81,13 +74,7 @@ class AssetTestCase(TestCase):
 class TimelineEntryTestCase(TestCase):
     @property
     def timeline_entry_kwargs(self):
-        return {
-            'start_date': generate_random_start_date(),
-            'headline': generate_random_headline(),
-            'text': generate_random_text(),
-            'asset': generate_random_asset(),
-            'timeline': generate_random_timeline(),
-        }
+        return TimelineFactory.attributes()
 
     def test_to_json_dict(self):
         kwargs = self.timeline_entry_kwargs
@@ -121,12 +108,7 @@ class TimelineEntryTestCase(TestCase):
 class TimelineTestCase(TestCase):
     @property
     def timeline_kwargs(self):
-        return {
-            'headline': generate_random_headline(),
-            'start_date': generate_random_start_date(),
-            'text': generate_random_text(),
-            'asset': generate_random_asset(),
-        }
+        return TimelineFactory.attributes()
 
     def test_to_json(self):
         kwargs = self.timeline_kwargs
@@ -148,32 +130,18 @@ class TimelineTestCase(TestCase):
         timeline.to_json()
 
     def test_to_json_with_one_date(self):
-        kwargs = self.timeline_kwargs
-        timeline = models.Timeline.objects.create(**kwargs)
-        entry = generate_random_timeline_entry(timeline, save=True)
+        entry = TimelineEntryFactory.create()
+        timeline = entry.timeline
 
-        expected = json.dumps({'timeline': {
-            'headline': kwargs['headline'],
-            'type': 'default',
-            'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
-            'text': kwargs['text'],
-            'asset': kwargs['asset'].to_json_dict(),
-            'date': [entry.to_json_dict()],
-        }})
-        self.assertEqual(expected, timeline.to_json())
+        expected = [entry.to_json_dict()]
+        actual = json.loads(timeline.to_json())['timeline']['date']
+        self.assertEqual(expected, actual)
 
     def test_to_json_with_two_dates(self):
-        kwargs = self.timeline_kwargs
-        timeline = models.Timeline.objects.create(**kwargs)
-        entry_a = generate_random_timeline_entry(timeline, save=True)
-        entry_b = generate_random_timeline_entry(timeline, save=True)
+        timeline = TimelineFactory.create()
+        entry_a = TimelineEntryFactory.create(timeline=timeline)
+        entry_b = TimelineEntryFactory.create(timeline=timeline)
 
-        expected = json.dumps({'timeline': {
-            'headline': kwargs['headline'],
-            'type': 'default',
-            'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
-            'text': kwargs['text'],
-            'asset': kwargs['asset'].to_json_dict(),
-            'date': [entry_a.to_json_dict(), entry_b.to_json_dict()],
-        }})
-        self.assertEqual(expected, timeline.to_json())
+        expected = [entry_a.to_json_dict(), entry_b.to_json_dict()]
+        actual = json.loads(timeline.to_json())['timeline']['date']
+        self.assertEqual(expected, actual)
