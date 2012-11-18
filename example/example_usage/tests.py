@@ -131,14 +131,14 @@ class TimelineTestCase(TestCase):
     def test_to_json(self):
         kwargs = self.timeline_kwargs
         timeline = models.Timeline(**kwargs)
-        expected = json.dumps({
+        expected = json.dumps({'timeline': {
             'headline': kwargs['headline'],
             'type': 'default',
             'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
             'text': kwargs['text'],
             'asset': kwargs['asset'].to_json_dict(),
             'date': [],
-        })
+        }})
         self.assertEqual(expected, timeline.to_json())
 
     def test_can_convert_to_json_with_string_dates(self):
@@ -152,14 +152,14 @@ class TimelineTestCase(TestCase):
         timeline = models.Timeline.objects.create(**kwargs)
         entry = generate_random_timeline_entry(timeline, save=True)
 
-        expected = json.dumps({
+        expected = json.dumps({'timeline': {
             'headline': kwargs['headline'],
             'type': 'default',
             'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
             'text': kwargs['text'],
             'asset': kwargs['asset'].to_json_dict(),
             'date': [entry.to_json_dict()],
-        })
+        }})
         self.assertEqual(expected, timeline.to_json())
 
     def test_to_json_with_two_dates(self):
@@ -168,12 +168,12 @@ class TimelineTestCase(TestCase):
         entry_a = generate_random_timeline_entry(timeline, save=True)
         entry_b = generate_random_timeline_entry(timeline, save=True)
 
-        expected = json.dumps({
+        expected = json.dumps({'timeline': {
             'headline': kwargs['headline'],
             'type': 'default',
             'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
             'text': kwargs['text'],
             'asset': kwargs['asset'].to_json_dict(),
             'date': [entry_a.to_json_dict(), entry_b.to_json_dict()],
-        })
+        }})
         self.assertEqual(expected, timeline.to_json())

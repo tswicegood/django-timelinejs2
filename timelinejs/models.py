@@ -32,14 +32,14 @@ class Timeline(models.Model):
     def to_json(self):
         if type(self.start_date) is str:
             self.start_date = parse_date(self.start_date)
-        return json.dumps({
+        return json.dumps({"timeline": {
             'headline': self.headline,
             'type': 'default',
             'startDate': self.start_date.strftime('%Y,%m,%d'),
             'text': self.text,
             'asset': self.asset.to_json_dict(),
             'date': [a.to_json_dict() for a in self.entries.all()],
-        })
+        }})
 
 
 class TimelineEntry(models.Model):
