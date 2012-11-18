@@ -2,3 +2,4 @@ example/.sass-cache/
 example/static/
 MANIFEST
 dist/
+example/project.db
