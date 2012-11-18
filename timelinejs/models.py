@@ -34,6 +34,7 @@ class Timeline(models.Model):
             self.start_date = parse_date(self.start_date)
         return json.dumps({
             'headline': self.headline,
+            'type': 'default',
             'startDate': self.start_date.strftime('%Y,%m,%d'),
             'text': self.text,
             'asset': self.asset.to_json_dict(),

@@ -133,6 +133,7 @@ class TimelineTestCase(TestCase):
         timeline = models.Timeline(**kwargs)
         expected = json.dumps({
             'headline': kwargs['headline'],
+            'type': 'default',
             'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
             'text': kwargs['text'],
             'asset': kwargs['asset'].to_json_dict(),
@@ -153,6 +154,7 @@ class TimelineTestCase(TestCase):
 
         expected = json.dumps({
             'headline': kwargs['headline'],
+            'type': 'default',
             'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
             'text': kwargs['text'],
             'asset': kwargs['asset'].to_json_dict(),
@@ -168,6 +170,7 @@ class TimelineTestCase(TestCase):
 
         expected = json.dumps({
             'headline': kwargs['headline'],
+            'type': 'default',
             'startDate': kwargs['start_date'].strftime('%Y,%m,%d'),
             'text': kwargs['text'],
             'asset': kwargs['asset'].to_json_dict(),
