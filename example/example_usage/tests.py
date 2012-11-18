@@ -76,6 +76,11 @@ class TimelineEntryTestCase(TestCase):
     def timeline_entry_kwargs(self):
         return TimelineFactory.attributes()
 
+    def test_unicode_shows_timeline_plus_headline(self):
+        entry = TimelineEntryFactory.build()
+        expected = '{0}: {1}'.format(entry.timeline, entry.headline)
+        self.assertEqual(expected, str(entry))
+
     def test_to_json_dict(self):
         kwargs = self.timeline_entry_kwargs
         entry = models.TimelineEntry(**kwargs)
@@ -109,6 +114,10 @@ class TimelineTestCase(TestCase):
     @property
     def timeline_kwargs(self):
         return TimelineFactory.attributes()
+
+    def test_unicode_shows_headline(self):
+        timeline = TimelineFactory.build()
+        self.assertEqual(timeline.headline, str(timeline))
 
     def test_to_json(self):
         kwargs = self.timeline_kwargs
