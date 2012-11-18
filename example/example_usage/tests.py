@@ -57,6 +57,10 @@ def generate_random_timeline_entry(timeline, save=True):
 
 
 class AssetTestCase(TestCase):
+    def test_unicode_shows_caption(self):
+        asset = AssetFactory.build()
+        self.assertEqual(asset.caption, str(asset))
+
     def test_to_json(self):
         """
         Verify that to_json returns appropriate JSON object

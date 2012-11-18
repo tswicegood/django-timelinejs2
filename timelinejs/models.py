@@ -9,6 +9,9 @@ class Asset(models.Model):
     credit = models.TextField(blank=True, default='')
     caption = models.TextField(blank=True, default='')
 
+    def __unicode__(self):
+        return self.caption
+
     def to_json_dict(self):
         return {
             'media': self.media,
