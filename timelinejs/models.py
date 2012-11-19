@@ -1,7 +1,7 @@
 import json
 
+from dateutil.parser import parse
 from django.db import models
-from django.utils.dateparse import parse_date
 
 
 class Asset(models.Model):
@@ -34,7 +34,7 @@ class Timeline(models.Model):
 
     def to_json(self):
         if type(self.start_date) is str:
-            self.start_date = parse_date(self.start_date)
+            self.start_date = parse(self.start_date)
         return json.dumps({"timeline": {
             'headline': self.headline,
             'type': 'default',
@@ -57,7 +57,7 @@ class TimelineEntry(models.Model):
 
     def to_json_dict(self):
         if type(self.start_date) is str:
-            self.start_date = parse_date(self.start_date)
+            self.start_date = parse(self.start_date)
         return {
             'startDate': self.start_date.strftime('%Y,%m,%d'),
             'headline': self.headline,
