@@ -13,4 +13,5 @@ class TimelineAdmin(admin.ModelAdmin):
     ]
 
 
+admin.site.register(models.Asset)
 admin.site.register(models.Timeline, TimelineAdmin)
