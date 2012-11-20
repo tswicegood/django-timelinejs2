@@ -127,6 +127,7 @@ INSTALLED_APPS = (
 
     'abstract_templates',
     'jquery',
+    'south',
     'timelinejs_static',
 
     'timelinejs',

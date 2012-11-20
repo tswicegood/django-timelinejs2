@@ -8,3 +8,4 @@ django-staticfiles-timelinejs-static==v2.18
 factory-boy==1.2.0
 dj-settings-helpers==1.0.0
 python-dateutil==2.1
+South==0.7.6
