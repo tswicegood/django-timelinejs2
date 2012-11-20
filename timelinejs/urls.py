@@ -1,4 +1,8 @@
-from django.conf.urls import patterns, url
+try:
+    from django.conf.urls import patterns, url
+except ImportError:
+    # Support Django 1.3
+    from django.conf.urls.defaults import patterns, url
 
 from . import views
 
