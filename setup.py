@@ -27,7 +27,7 @@ for dirpath, dirnames, filenames in os.walk('timelinejs'):
 
 setup(
     name='django-timelinejs2',
-    version='2.18.0.1',
+    version='2.18.1alpha.0',
     description='Connecting Timeline.js v2.18 to Django',
     author='Travis Swicegood',
     author_email='development@domain51.com',
