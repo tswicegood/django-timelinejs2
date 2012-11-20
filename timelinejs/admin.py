@@ -12,6 +12,10 @@ class TimelineAdmin(admin.ModelAdmin):
         TimelineEntryInline,
     ]
 
+    prepopulated_fields = {
+        'slug': ('headline', ),
+    }
+
 
 admin.site.register(models.Asset)
 admin.site.register(models.Timeline, TimelineAdmin)

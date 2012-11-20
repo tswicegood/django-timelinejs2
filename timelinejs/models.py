@@ -26,6 +26,7 @@ class Asset(models.Model):
 class Timeline(models.Model):
     headline = models.CharField(max_length=255)
     start_date = models.DateField()
+    slug = models.SlugField(default='')
     text = models.TextField()
     asset = models.ForeignKey(Asset, related_name='timelines')
 
