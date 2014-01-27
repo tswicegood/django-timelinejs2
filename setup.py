@@ -31,7 +31,7 @@ setup(
     description='Connecting Timeline.js v2.18 to Django',
     author='Travis Swicegood',
     author_email='development@domain51.com',
-    url='http://github.com/tswicegood/django-timelinejs/',
+    url='https://github.com/tswicegood/django-timelinejs2/',
     install_requires=[
         'django-staticfiles-timelinejs_static==2.18',
         'python-dateutil>=1.5',
